@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="de" ng-app="app">
+<head>
+
+    <link href="assets/img/favicon/favicon.png" rel="icon" type="image/x-icon"/>
+
+    <!--Metadaten-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<meta name="viewport" content="width=400">-->
+
+    <!-- Wenn JS deaktiviert ist wird dies mit einem Hinweis abgefangen -->
+    <style id="if-no-JS">
+        .info-if-no-JS {
+            display: block !important;
+        }
+
+        .window {
+            display: none !important;
+        }
+    </style>
+
+    <script>
+        document.getElementById("if-no-JS").innerHTML = ".info-if-no-JS {display: none;} .window {display: block;}"
+    </script>
+
+    <!--Seitentitel-->
+    <title ng-bind="pageTitle"></title>
+
+    <!--CSS-->
+    <link rel="stylesheet" href="assets/libs/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="assets/css/wizard.css">
+    <!--Dynamisches CSS: wird von JS erstellt-->
+    <style id="dynamicCSS1"></style>
+    <style id="dynamicCSS2"></style>
+
+
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="assets/libs/angular-1.5.0-rc.1/angular.js"></script> <!-- AngularJS -->
+    <script src="assets/libs/angular-1.5.0-rc.1/angular-animate.js"></script> <!-- AngularJS -->
+    <script src="assets/libs/angular-1.5.0-rc.1/angular-sanitize.js"></script> <!-- AngularJS -->
+    <script src="assets/libs/jquery-3.1.1.js"></script>
+    <script src="assets/libs/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script src="assets/libs/angular-bootstrap3-typeahead.js"></script>
+    <script src="assets/libs/re-tree-master/re-tree.js"></script>
+    <script src="assets/libs/ng-device-detector-master/ng-device-detector.js"></script>
+
+
+    <!--meine App-->
+    <script src="app/app.module.js"></script>
+    <script src="app/components/wizard/controller.module.js"></script>
+    
+    <!-- easter egg -->
+    <script src="assets/libs/bus.js"></script>
+    <script>
+            var busImage = '<img id="busimg" style="display: none" src="assets/img/bus/bus.png" />'
+            $('window').append(busImage);
+            var easter_egg = new Konami(BusFct);
+    </script>
+    
+    
+
+    <!-- Matomo 
+    <script type="text/javascript">
+      var _paq = window._paq || [];
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="//matomo.myurl.tld/";
+        _paq.push(['setTrackerUrl', u+'matomo.php']);
+        _paq.push(['setSiteId', '42']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+      })();
+    </script>
+    <!-- End Matomo Code -->
+
+</head>
+
+<body ng-controller="wizard.controller.ctrl" ng-keydown="keyDown($event)">
+
+<div class="info-if-no-JS">
+    <div class="va1">
+        <div class="va2">
+            Sie haben Javascript bei ihrem Browser nicht aktiviert. Bitte aktivieren Sie Javascript, ansonsten können Sie den Dynamischen Abfahrtsanzeiger leider nicht verwenden.
+        </div>
+    </div>
+</div>
+
+<div class="test"></div>
+
+<div class="window">
+
+    <img id="busimg" style="display: none" src="assets/img/bus/bus.png" />
+    <div class="background">
+        <div class="surround-border"></div>
+        <div class="box-shadow"></div>
+    </div>
+    
+    <!-- Matomo Image Tracker
+    <noscript>
+    <img src="https://myurl.tld/matomo/matomo.php?idsite=42&amp;rec=1" style="border:0" alt="" />
+    </noscript>
+    <!-- End Matomo -->
+
+    <header class="wizard-header">
+        <span class="logo"></span>
+        <p class="title">ÖV Plus</p>
+    </header>
+
+
+    <div class="content-container">
+
+
+        <div class="panel-section-fitting">
+            <!--<div class="overflow-handler">-->
+            <div class="panel-fitting">
+
+                <div class="va1">
+                    <div class="va2">
+
+                        <section class="panel-container">
+
+
+                            <!--Anzeige oben (1)-->
+                            <div class="anzeige-1">
+
+                                <!--Kontainer (1)-->
+                                <p class="title-for-panel-frame"
+                                   ng-if="screenBuildDefinitions.viewType == 'singleView'">Anzeige</p>
+                                <p class="title-for-panel-frame"
+                                   ng-if="screenBuildDefinitions.viewType == 'splitView'">Anzeige oben</p>
+                                <div class="panel-frame select-station">
+                                    <label for="stationGroup1" class="panel-icon"
+                                           ng-class="{'split-top': screenBuildDefinitions.viewType == 'splitView'}"></label>
+
+                                    <!--Input: Titel (1)-->
+                                    <div class="input-container title"
+                                         ng-if="screenBuildDefinitions.allowMultibleStationsPerGroup">
+                                        <label class="my-label" for="stationGroup1">Titel definieren</label><br>
+                                        <input class="form-control my-input" type="text"
+                                               ng-change="createViewAndURL()"
+                                               ng-model="screenBuildDefinitions.stationGroup1Title"
+                                               placeholder="Titel"
+                                        />
+                                        <div class="very-small-spacing"></div>
+                                    </div>
+
+
+                                    <!--Input: Haltestelle (1)-->
+                                    <div class="input-container station">
+                                        <label ng-if="!screenBuildDefinitions.allowMultibleStationsPerGroup"
+                                               class="my-label" for="stationGroup1">Haltestelle auswählen</label>
+                                        <label ng-if="screenBuildDefinitions.allowMultibleStationsPerGroup"
+                                               class="my-label" for="stationGroup1">Haltestelle hinzufügen</label><br>
+                                        <div class="search-station">
+                                            <input id="stationGroup1" class="form-control my-input"
+                                                   type="text"
+                                                   autocomplete="off"
+                                                   ng-change="stationAutoComplete('stationGroup1')"
+                                                   ng-model="stationInputFields.stationGroup1"
+                                                   placeholder="Haltestelle suchen"
+                                                   typeahead="stationAutocompleteResult.stationGroup1"
+                                                   typeahead-callback="stationTypeaheadCallback1"/>
+                                            <div class="search-station-icon"></div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                                <!--Haltestellen-Entity Liste (1)-->
+                                <div class="panel-frame station-entitie-group">
+
+                                    <div class="station-entity"
+                                         ng-repeat="station in screenBuildDefinitions.stationGroup1">
+                                            <span class="delete-button"
+                                                  ng-click="deleteButtonOfStationEntityHasBeenPushed('stationGroup1', $index)"></span>
+                                        <p class="station-name"
+                                           ng-class="{'bold': ((screenBuildDefinitions.stationGroup1.length > 1) && ($index == 0))}">
+                                            {{station.name}}</p>
+
+                                        <div class="number-input-container">
+                                            <input type="number" class="number-input my-input form-control"
+                                                   ng-model="station.quantityOfDepartures" id="{{'se1'+$index}}"
+                                                   ng-change="quantityOfStationEntityHasChanged('stationGroup1', $index)">
+                                            <label class="number-label" for="{{'se1'+$index}}">Anzahl:</label>
+                                            <div class="small-spacing"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <!--Anzeige unten (2)-->
+                            <div class="anzeige-2" ng-if="screenBuildDefinitions.viewType == 'splitView'">
+
+                                <div class="big-spacing"></div>
+
+                                <!--Kontainer (2)-->
+                                <p class="title-for-panel-frame">Anzeige unten</p>
+                                <div class="panel-frame select-station">
+                                    <label for="stationGroup2" class="panel-icon"
+                                           ng-class="{'split-bottom': screenBuildDefinitions.viewType == 'splitView'}"></label>
+
+                                    <!--Input: Titel (2)-->
+                                    <div class="input-container title"
+                                         ng-if="screenBuildDefinitions.allowMultibleStationsPerGroup">
+                                        <label class="my-label" for="stationGroup2title">Titel definieren</label><br>
+                                        <input class="form-control my-input" type="text"
+                                               ng-change="createViewAndURL()"
+                                               ng-model="screenBuildDefinitions.stationGroup2Title"
+                                               placeholder="Titel"
+                                               id="stationGroup2title"
+                                        />
+                                        <div class="very-small-spacing"></div>
+                                    </div>
+
+
+                                    <!--Input: Haltestelle (1)-->
+                                    <div class="input-container station">
+                                        <label ng-if="!screenBuildDefinitions.allowMultibleStationsPerGroup"
+                                               class="my-label" for="stationGroup2">Haltestelle auswählen</label>
+                                        <label ng-if="screenBuildDefinitions.allowMultibleStationsPerGroup"
+                                               class="my-label" for="stationGroup2">Haltestelle hinzufügen</label><br>
+                                        <div class="search-station">
+                                            <input id="stationGroup2" class="form-control my-input"
+                                                   type="text"
+                                                   autocomplete="off"
+                                                   ng-change="stationAutoComplete('stationGroup2')"
+                                                   ng-model="stationInputFields.stationGroup2"
+                                                   placeholder="Haltestelle suchen"
+                                                   typeahead="stationAutocompleteResult.stationGroup2"
+                                                   typeahead-callback="stationTypeaheadCallback2"/>
+                                            <div class="search-station-icon"></div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                                <!--Haltestellen-Entity Liste (2)-->
+                                <div class="panel-frame station-entitie-group">
+
+                                    <div class="station-entity"
+                                         ng-repeat="station in screenBuildDefinitions.stationGroup2">
+                                            <span class="delete-button"
+                                                  ng-click="deleteButtonOfStationEntityHasBeenPushed('stationGroup2', $index)"></span>
+                                        <p class="station-name"
+                                           ng-class="{'bold': ((screenBuildDefinitions.stationGroup2.length > 1) && ($index == 0))}">
+                                            {{station.name}}</p>
+
+                                        <div class="number-input-container">
+                                            <input type="number" class="number-input my-input form-control"
+                                                   ng-model="station.quantityOfDepartures" id="{{'se2'+$index}}"
+                                                   ng-change="quantityOfStationEntityHasChanged('stationGroup2', $index)">
+                                            <label class="number-label" for="{{'se2'+$index}}">Anzahl:</label>
+                                            <div class="small-spacing"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="big-spacing"></div>
+                            <div class="middle-spacing"></div>
+
+
+                            <!--Optionen-->
+                            <p class="title-for-panel-frame">Optionen</p>
+                            <div class="panel-frame options">
+                                <label for="viewType" class="panel-icon"></label>
+
+
+                                <label class="my-label my-checkbox">
+                                    <input ng-change="createViewAndURL()" type="checkbox"
+                                           ng-model="screenBuildDefinitions.showClock">
+                                    <p class="text-format">Uhr anzeigen</p>
+                                </label>
+
+                                <div class="very-small-spacing"></div>
+
+                                <label class="my-label my-checkbox">
+                                    <input ng-change="createViewAndURL()" type="checkbox"
+                                           ng-model="screenBuildDefinitions.showPerron">
+                                    <p class="text-format">Kante / Gleis anzeigen</p>
+                                </label>
+
+                                <div class="very-small-spacing"></div>
+
+                                <label class="my-label my-checkbox">
+                                    <input ng-change="allowMultibleStationsPerGroupHasChanged();createViewAndURL();"
+                                           type="checkbox"
+                                           ng-model="screenBuildDefinitions.allowMultibleStationsPerGroup">
+                                    <p class="text-format">Mehrere Haltestellen pro Anzeiger zulassen</p>
+                                </label>
+
+                                <div class="small-spacing"></div>
+
+                                <div class="select-input-styling">
+                                    <select id="viewType" class="form-control my-select"
+                                            ng-model="screenBuildDefinitions.viewType"
+                                            ng-change="createViewAndURL();createCSSafterTimeout();">
+                                        <option value="singleView">Einfache Anzeige</option>
+                                        <option value="splitView">Split Anzeige</option>
+                                    </select>
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="small-spacing"></div>
+
+                            <div class="text-align-center">
+                                <a href="bedienungsanleitung_oevplus_abfahrtsanzeiger.pdf" target="_blank">Bedienungsanleitung</a>
+                            </div>
+                            
+                             <div class="small-spacing"></div>
+
+                            <button id="openMonitorButton" ng-click="openMonitorInNewWindow()"
+                                    class="btn btn-info my-button">
+                                Monitor in neuem Fenster anzeigen
+                            </button>
+
+
+                        </section>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--</div>-->
+
+
+        <div class="preview-section-fitting">
+            <!--<div class="overflow-handler preview">-->
+
+
+            <div class="va1">
+                <div class="va2">
+
+                    <section class="preview-container">
+
+
+                        <div class="width-to-height-ratio"
+                             ng-class="{
+                                     '_16to9': screen.proportions['16to9'],
+                                     '_16to10': screen.proportions['16to10'],
+                                     '_3to2': screen.proportions['3to2'],
+                                     '_4to3': screen.proportions['4to3'],
+                                     'rotate': screen.rotate
+                                     }">
+                            <div class="screen">
+                                <div class="screen-frame "></div>
+
+                                <div class="screen-panel" ng-class="{'rotate': screen.rotate }">
+                                    <div class="button-container">
+
+                                        <div class="button">
+                                            <div class="va1">
+                                                <div class="va2">
+                                                    <p>16:9</p>
+                                                </div>
+                                            </div>
+                                            <div class="hover-effect"></div>
+                                            <div class="click" ng-click="changeScreenSizeTo('16to9')"></div>
+                                        </div>
+                                        <div class="button">
+                                            <div class="va1">
+                                                <div class="va2">
+                                                    <p>16:10</p>
+                                                </div>
+                                            </div>
+                                            <div class="hover-effect"></div>
+                                            <div class="click"
+                                                 ng-click="changeScreenSizeTo('16to10');createCSSafterTimeout();"></div>
+                                        </div>
+                                        <div class="button">
+                                            <div class="va1">
+                                                <div class="va2">
+                                                    <p>3:2</p>
+                                                </div>
+                                            </div>
+                                            <div class="hover-effect"></div>
+                                            <div class="click"
+                                                 ng-click="changeScreenSizeTo('3to2');createCSSafterTimeout();"></div>
+                                        </div>
+                                        <div class="button">
+                                            <div class="va1">
+                                                <div class="va2">
+                                                    <p>4:3</p>
+                                                </div>
+                                            </div>
+                                            <div class="hover-effect"></div>
+                                            <div class="click"
+                                                 ng-click="changeScreenSizeTo('4to3');createCSSafterTimeout();"></div>
+                                        </div>
+                                        <div class="button _rotate">
+                                            <div class="hover-effect"></div>
+                                            <div class="click"
+                                                 ng-click="rotateScreen();createCSSafterTimeout();"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <iframe ng-src="{{iframeURL}}"></iframe>
+
+                            </div>
+                        </div>
+
+                    </section>
+
+                </div>
+            </div>
+            <!--</div>-->
+        </div>
+
+    </div>
+
+    <footer class="footer">
+
+        <div class="contact">
+            <b>NAME</b><br/>
+            Address<br/>
+            Tel: <a href="tel:123456789">123456789</a><br/>
+            E-Mail: <a href="mailto:support@mycompany.tld">support@mycompany.tld</a><br/>
+        </div>
+
+
+        <div class="oev-plus-badges">
+<!--
+            <p class="badge-title">ÖV Plus auch als App</p>
+
+            <div class="badge-logo google-play">
+                <img alt='Google Play' src='assets/img/logos/google-play.png'/>
+                <div class="hover-effect"></div>
+                <a href='https://play.google.com/store/apps/details?id=ch.glue.android.mezi&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'></a>
+            </div>
+
+            <div class="badge-logo apple-store">
+                <img alt='Apple Store' src="assets/img/logos/apple-store.png"/>
+                <div class="hover-effect"></div>
+                <a href="https://itunes.apple.com/ch/app/mezi/id342335298?mt=8"></a>
+            </div>
+-->
+        </div>
+
+
+    </footer>
+
+
+    <aside class="konsole" ng-show="showMyConsole" ng-dblclick="hideConsole()">
+        <b>screenBuildDefinitions</b>{{ screenBuildDefinitions}}<br><br>
+        <b>screenBuildUrl</b>{{ screenBuildUrl}}<br><br>
+        <!--$scope.popup.showPopup: {{popup}}<br><br>-->
+        <!--panelContainerHeigth: {{logit}}<br><br>-->
+        <!--<input ng-model="screenBuildDefinitions.layout" ng-value="1" type="radio" id="layout1" ng-change="createViewAndURL()" />-->
+        <!--<label for="layout1"> Layout-Variante 1 </label> |-->
+        <!--<input ng-model="screenBuildDefinitions.layout" ng-value="'1 _3'"  type="radio" id="layout3" ng-change="createViewAndURL()"/>-->
+        <!--<label for="layout3"> Layout-Variante 2 </label> |-->
+        <!--<input ng-model="screenBuildDefinitions.layout" ng-value="2"  type="radio" id="layout2" ng-change="createViewAndURL()"/>-->
+        <!--<label for="layout2"> alte Version </label>-->
+        <br><br>
+
+    </aside>
+
+    <div class="popup-background" ng-show="popup.showPopup">
+        <div class="table-for-vertical-align">
+            <div class="tablecell-for-vertical-align">
+                <div class="popup">
+
+                    <div class="content" ng-class="{'has-screenshot': popup.showScreenshot}">
+                        <div class="text-container">
+                            <p class="title" ng-show="popup.showTitle">{{popup.title}}</p>
+                            <p class="message hyphens" ng-bind-html="popup.message"></p>
+                        </div>
+                        <div class="screenshot" ng-if="popup.showScreenshot"
+                             ng-style="{'background-image':'url(assets/img/screenshot/screenshot'+popup.screenshotNumber+'.jpg)'}">
+                        </div>
+                    </div>
+
+                    <div class="bottom-grey">
+                        <div class="ok-button" id="popup-ok-button" ng-click="closePopup()">OK</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+</body>
+</html>
